@@ -242,11 +242,11 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
     if(GetWord(str + shift, cmd) < 0) return;
     cmd_len = strlen(cmd);
 
-    if(cmd[0] == '[' && cmd[cmd_len - 1] == ']')
+    if(cmd[0] == '[')
     {
         if(cmd[1] == 'r' && cmd[3] == 'x')
         {
-            char* plus_pointer = strchr(cmd, '+');
+            char* plus_pointer = strchr(str, '+');
             if(plus_pointer != NULL)
             {
                 int index;
@@ -256,6 +256,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 if(reg > 4)
                 {
                     printf("Syntax error: unknown register\n");
+                    printf("%s\n", str);
                     abort();
                 }
 
@@ -263,7 +264,8 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 *((elem_t*)(*code)) = index;
                 *((char*)(*code + sizeof(elem_t))) = reg;
                 
-                fprintf(listing, "%X %s %s\n", *((elem_t*)(*code)), cmd_name, cmd);
+                ToUpper(cmd + 1);
+                fprintf(listing, "%X %s %s + %d]\n", *((elem_t*)(*code)), cmd_name, cmd, index);
                 *code += sizeof(elem_t) + sizeof(char);
             }
 
@@ -273,12 +275,14 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 if(reg > 4)
                 {
                     printf("Syntax error: unknown register\n");
+                    printf("%s\n", str);
                     abort();
                 }
 
                 *((char*)(*code - 1)) |= 0xC0;
                 *((char*)(*code)) = reg;
 
+                ToUpper(cmd + 1);
                 fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
                 *code += sizeof(char);
             }
@@ -303,6 +307,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
         if(reg > 4)
         {
             printf("Syntax error: unknown register\n");
+            printf("%s\n", str);
             abort();
         }
 
@@ -329,7 +334,8 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
 
     else
     {
-        printf("Syntax error: unknown parameter\n");
+        printf("Syntax error: unknown argument\n");
+        printf("%s\n", str);
         abort();
     }
 
@@ -351,6 +357,7 @@ void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_o
     if(cmd[0] != ':')
     {
         printf("syntax error: this is not a label\n");
+        printf("%s\n", str);
         abort();
     }
     
@@ -359,6 +366,7 @@ void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_o
     if(num_of_compilation == 2 && label_adr == 0xFF)
     {
         printf("error: unknown label\n");
+        printf("%s\n", str);
         abort();
     }
 
@@ -406,7 +414,7 @@ void ToUpper(char* str)
     assert(str != NULL);
 
     char* begin = str;
-    while(*begin != '\0')
+    while(*begin != '\0' && isalpha(*begin))
     {
         *begin -= 32;
         ++begin;

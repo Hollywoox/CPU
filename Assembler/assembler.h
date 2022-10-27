@@ -20,6 +20,7 @@ enum comands
 {
     CMD_HLT,
     CMD_PUSH,
+    CMD_POP
     CMD_ADD,
     CMD_SUB,
     CMD_MUL,
