@@ -90,6 +90,15 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             GetArgs(text->str_array[line].str, &ip, cmd, listing);
         }
 
+        else if(strcmp(cmd, "pop") == 0)
+        {
+            *ip = CMD_POP;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_POP);
+            ++ip;
+
+            GetArgs(text->str_array[line].str, &ip, cmd, listing);
+        }
+
         else if(strcmp(cmd, "add") == 0)
         {
             *ip = CMD_ADD;
@@ -163,6 +172,83 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
 
             GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
             fprintf(listing, "%X JUMP %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "jb") == 0)
+        {
+            *ip = CMD_JB;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JB);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JB %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+       else if(strcmp(cmd, "jbe") == 0)
+        {
+            *ip = CMD_JBE;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JBE);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JBE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        } 
+
+        else if(strcmp(cmd, "ja") == 0)
+        {
+            *ip = CMD_JA;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JA);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JA %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "jae") == 0)
+        {
+            *ip = CMD_JAE;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JAE);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JAE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "je") == 0)
+        {
+            *ip = CMD_JE;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JE);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "jne") == 0)
+        {
+            *ip = CMD_JNE;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JNE);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X JNE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "call") == 0)
+        {
+            *ip = CMD_CALL;
+            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_CALL);
+            ++ip;
+
+            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
+            fprintf(listing, "%X CALL %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
+        }
+
+        else if(strcmp(cmd, "ret") == 0)
+        {
+            *ip = CMD_RET;
+            fprintf(listing, "%#8lX %2X   RET\n", ip - code - size, CMD_RET);
+            ++ip;
         }
 
         else if(cmd[0] == '\0')

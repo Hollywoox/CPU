@@ -1,7 +1,11 @@
 Signature: C
-CPU version: 1
+CPU version: 2
 
-       0  9 1 IN rax
-     0X2  1 F PUSH [RAX + 15]
-     0X8  7   OUT
-     0X9  0   HLT
+       0  A 1 IN rax
+     0X2  1 14D PUSH 333
+     0X7  2 1 POP [RAX]
+     0X9  1 1 PUSH [RAX]
+     0XB  1 64 PUSH 100
+    0X10  3   ADD
+    0X11  8   OUT
+    0X12  0   HLT

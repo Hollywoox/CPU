@@ -4,7 +4,7 @@
 #include "../include/onegin.h"
 #include "../include/stack.h"
 
-#define VERSION 1
+#define VERSION 2
 #define SIGN 0xC
 #define LABELS_SIZE 50
 
@@ -20,7 +20,7 @@ enum comands
 {
     CMD_HLT,
     CMD_PUSH,
-    CMD_POP
+    CMD_POP,
     CMD_ADD,
     CMD_SUB,
     CMD_MUL,
@@ -30,6 +30,14 @@ enum comands
     CMD_DUMP,
     CMD_IN,
     CMD_JMP,
+    CMD_JB,
+    CMD_JBE,
+    CMD_JA,
+    CMD_JAE,
+    CMD_JE,
+    CMD_JNE,
+    CMD_CALL,
+    CMD_RET,
 };
 
 
