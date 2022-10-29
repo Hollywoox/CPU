@@ -2,10 +2,16 @@ Signature: C
 CPU version: 2
 
        0  A 1 IN rax
-     0X2  1 14D PUSH 333
-     0X7  2 1 POP [RAX]
-     0X9  1 1 PUSH [RAX]
-     0XB  1 64 PUSH 100
-    0X10  3   ADD
-    0X11  8   OUT
-    0X12  0   HLT
+     0X2  A 2 IN rbx
+     0X4  A 4 IN rdx
+     0X6 12 E CALL E
+     0XB  A   IN
+     0XC  8   OUT
+     0XD  0   HLT
+     0XE  1 1 PUSH rax
+    0X10  1 2 PUSH rbx
+    0X12  1 4 PUSH rdx
+    0X14  3   ADD
+    0X15  3   ADD
+    0X16  8   OUT
+    0X17 13   RET

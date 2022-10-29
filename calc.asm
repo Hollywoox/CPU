@@ -1,11 +1,18 @@
+
 in rax
-push 333
-pop [rax]
+in rbx
+in rdx
+call :sum
 
+in
+out
+hlt
 
-push [rax]
-push 100
+sum:
+push rax
+push rbx
+push rdx
+add
 add
 out
-
-hlt
+ret

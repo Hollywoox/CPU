@@ -4,18 +4,8 @@
 
 void AsmProgArray(Text* text, char* file)
 {
-    if(text == NULL)
-    {
-        PrintErrorMessage();
-        printf("Text pointer is NULL!\n");
-        abort();
-    }
-    if(file == NULL)
-    {
-        PrintErrorMessage();
-        printf("pointer to file name is NULL\n");
-        abort();
-    }
+    assert(text != NULL);
+    assert(file != NULL);
 
     FILE* asm_prog = fopen(file, "r");
     if(asm_prog == NULL)
@@ -40,31 +30,28 @@ void AsmProgArray(Text* text, char* file)
 
 void Compile(Text* text, struct Label* labels, int num_of_compilation)
 {
-    if(text == NULL)
-    {
-        PrintErrorMessage();
-        printf("Text pointer is NULL!\n");
-        abort();
-    }
+    assert(text   != NULL);
+    assert(labels != NULL);
 
     FILE* listing = fopen("listing.txt", "w");
-    assert(listing != NULL);
-    fprintf(listing, "Signature: %X\nCPU version: %d\n\n", SIGN, VERSION);
-
-    size_t size = sizeof(char) + sizeof(elem_t);
-    char* code = (char*)calloc(text->num_of_str + 1, size);
-    if(code == NULL)
+    if(listing == NULL)
     {
         PrintErrorMessage();
-        printf("can't find the required memory block!\n");
+        printf("can't open file for listing\n");
         abort();
     }
 
-    *code = SIGN;
-    *(code + 1) = VERSION;
-    char* ip = code + size;
+    fprintf(listing, "Signature: %X\nCPU version: %d\n\n", SIGN, VERSION);
 
-    int line = 0;
+    size_t size = 2 * sizeof(char) + sizeof(elem_t);
+    char* code  = (char*)calloc(text->num_of_str + 1, size);
+    assert(code != NULL);
+
+    *code       = SIGN;
+    *(code + 1) = VERSION;
+    char* ip    = code + size;
+
+    int line        = 0;
     int label_index = 0;
     while(line < text->num_of_str)
     {
@@ -74,10 +61,10 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
 
         if(cmd[cmd_len - 1] == ':')
         {
-            cmd[cmd_len - 1] = '\0';
+            cmd[cmd_len - 1]         = '\0';
             labels[label_index].name = cmd;
-            labels[label_index].adr = ip - code - size;
-            cmd = NULL;
+            labels[label_index].adr  = ip - code - size;
+            cmd                      = NULL;
             ++label_index;
         }
 
@@ -258,8 +245,8 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
 
         else
         {
-            PrintErrorMessage();
-            printf("unknown command!\n");
+            printf("Syntax error: unknown command\n");
+            printf("%s\n", text->str_array[line].str);
             abort();
         }
 
@@ -315,17 +302,24 @@ int GetWord(char* str, char* cmd)
 
 void GetArgs(char* str, char** code, char* cmd, FILE* listing)
 {
-    assert(str != NULL);
-    assert(code != NULL);
-    assert(cmd != NULL);
+    assert(str     != NULL);
+    assert(code    != NULL);
+    assert(cmd     != NULL);
     assert(listing != NULL);
 
     size_t cmd_len = strlen(cmd);
     char* cmd_name = (char*)calloc(cmd_len, sizeof(char));
+    int shift      = strstr(str, cmd) - str + cmd_len;
+
     strcpy(cmd_name, cmd);
     ToUpper(cmd_name);
-    int shift = strstr(str, cmd) - str + cmd_len;
-    if(GetWord(str + shift, cmd) < 0) return;
+
+    if(GetWord(str + shift, cmd) < 0)
+    {
+        fprintf(listing, "  %s\n", cmd_name);
+        return;
+    }
+
     cmd_len = strlen(cmd);
 
     if(cmd[0] == '[')
@@ -346,8 +340,8 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                     abort();
                 }
 
-                *((char*)(*code - 1)) |= 0xE0;
-                *((elem_t*)(*code)) = index;
+                *((char*)(*code - 1))             |= 0xE0;
+                *((elem_t*)(*code))                = index;
                 *((char*)(*code + sizeof(elem_t))) = reg;
                 
                 ToUpper(cmd + 1);
@@ -366,7 +360,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 }
 
                 *((char*)(*code - 1)) |= 0xC0;
-                *((char*)(*code)) = reg;
+                *((char*)(*code))      = reg;
 
                 ToUpper(cmd + 1);
                 fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
@@ -380,7 +374,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
             sscanf(cmd + 1, "%d", &index);
 
             *((char*)(*code - 1)) |= 0xA0;
-            *((elem_t*)(*code)) = index;
+            *((elem_t*)(*code))    = index;
 
             fprintf(listing, "%X %s %s\n", *((elem_t*)(*code)), cmd_name, cmd);
             *code += sizeof(elem_t);
@@ -398,7 +392,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
         }
 
         *((char*)(*code - 1)) |= 0x40;
-        *((char*)(*code)) = reg;
+        *((char*)(*code))      = reg;
 
         fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
         *code += sizeof(char);
@@ -410,7 +404,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
         sscanf(cmd, elem_fmt, &val);
 
         *((char*)(*code - 1)) |= 0x20;
-        *((elem_t*)(*code)) = val;
+        *((elem_t*)(*code))    = val;
 
         fprintf(listing, "%X %s ", *((elem_t*)(*code)), cmd_name);
         fprintf(listing, elem_fmt, *((elem_t*)(*code)));
@@ -432,10 +426,10 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
 
 void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation)
 {
-    assert(str != NULL);
-    assert(code != NULL);
+    assert(str    != NULL);
+    assert(code   != NULL);
     assert(labels != NULL);
-    assert(cmd != NULL);
+    assert(cmd    != NULL);
 
     int shift = strstr(str, cmd) - str + strlen(cmd);
     GetWord(str + shift, cmd);
@@ -457,14 +451,14 @@ void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_o
     }
 
     *((int*)(*code)) = label_adr;
-    *code += sizeof(int);
+    *code           += sizeof(int);
 }
 
 //=====================================================================================================
 
 int LabelFind(const char* label, struct Label* labels)
 {
-    assert(label != NULL);
+    assert(label  != NULL);
     assert(labels != NULL);
 
     int i = 0;
@@ -486,7 +480,7 @@ int IsNum(char* str)
     char* begin = str;
     while(*begin != '\0')
     {
-        if(*begin < 48 || *begin > 57)
+        if(!((*begin > 47 && *begin < 58) || *begin == '.'))
             return 0;
         ++begin;
     }

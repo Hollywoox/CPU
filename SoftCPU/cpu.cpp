@@ -121,7 +121,7 @@ void Run(CPU* cpu)
                         ip += 1;
                     }
 
-                    cpu->RAM[arg] = new_elem;
+                    cpu->RAM[(int)arg] = new_elem;
                 }
                 else if(cmd & ARG_REG)
                 {
@@ -154,7 +154,7 @@ void Run(CPU* cpu)
                 }
                 if(cmd & ARG_RAM)
                 {
-                    arg = cpu->RAM[arg];
+                    arg = cpu->RAM[(int)arg];
                 }
 
                 StackPush(&cpu->stk, arg);
@@ -180,7 +180,7 @@ void Run(CPU* cpu)
                         ip += 1;
                     }
 
-                    cpu->RAM[arg] = StackPop(&cpu->stk);
+                    cpu->RAM[(int)arg] = StackPop(&cpu->stk);
                 }
                 else if(cmd & ARG_REG)
                 {
@@ -347,7 +347,8 @@ void Run(CPU* cpu)
 
             case CMD_RET:
             {
-                ip = cpu->code + StackPop(&cpu->ret_stk);
+                int ret_adr = StackPop(&cpu->ret_stk);
+                ip = cpu->code + ret_adr;
                 break;
             }
 

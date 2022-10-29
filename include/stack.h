@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <math.h>
 
-#define INT
+#define DOUBLE
 #define CANARY_PROT
 
 #ifdef CANARY_PROT
@@ -21,7 +21,7 @@
 
 #ifdef DOUBLE
     typedef double elem_t;
-    static const char* elem_fmt = "%f";
+    static const char* elem_fmt = "%lf";
     const double POISON = -6789456123.435612;
     const int SHIFT = 1;
 #endif
