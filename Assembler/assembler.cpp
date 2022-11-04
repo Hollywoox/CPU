@@ -2,13 +2,13 @@
 
 //=====================================================================================================
 
-void AsmProgArray(Text* text, char* file)
+void AsmCodeArray(Text* text, char* file)
 {
     assert(text != NULL);
     assert(file != NULL);
 
-    FILE* asm_prog = fopen(file, "r");
-    if(asm_prog == NULL)
+    FILE* asm_code = fopen(file, "r");
+    if(asm_code == NULL)
     {
         PrintErrorMessage();
         printf("can't open the file!\n");
@@ -17,13 +17,13 @@ void AsmProgArray(Text* text, char* file)
     
     CountBytes(text, file);
 
-    MakeBuf(text, asm_prog);
+    MakeBuf(text, asm_code);
 
     CountStr(text);
 
     MakeStrArray(text);
 
-    fclose(asm_prog);
+    fclose(asm_code);
 }
 
 //=====================================================================================================
@@ -254,13 +254,13 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
         ++line;
     }
 
-    *((short int*)(code + 2)) = ip - code - size;
+    *((int*)(code + 2)) = ip - code - size;
 
-    FILE* fout = fopen("result.bin", "wb");
+    FILE* fout = fopen("code.bin", "wb");
     if(fout == NULL)
     {
         PrintErrorMessage();
-        printf("can't open file for binary code\n");
+        printf("can't open a file for binary code\n");
         abort();
     } 
 
@@ -434,24 +434,36 @@ void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_o
     int shift = strstr(str, cmd) - str + strlen(cmd);
     GetWord(str + shift, cmd);
 
-    if(cmd[0] != ':')
+    if(IsNum(cmd))
     {
-        printf("syntax error: this is not a label\n");
-        printf("%s\n", str);
-        abort();
-    }
-    
-    int label_adr = LabelFind(cmd + 1, labels);
-    
-    if(num_of_compilation == 2 && label_adr == 0xFF)
-    {
-        printf("error: unknown label\n");
-        printf("%s\n", str);
-        abort();
+        int label_adr = 0;
+        sscanf(cmd, "%d", &label_adr);
+
+        *((int*)(*code)) = label_adr;
+        *code           += sizeof(int);
     }
 
-    *((int*)(*code)) = label_adr;
-    *code           += sizeof(int);
+    else
+    {
+        if(cmd[0] != ':')
+        {
+            printf("syntax error: this is not a label\n");
+            printf("%s\n", str);
+            abort();
+        }
+    
+        int label_adr = LabelFind(cmd + 1, labels);
+    
+        if(num_of_compilation == 2 && label_adr == 0xFF)
+        {
+            printf("error: unknown label\n");
+            printf("%s\n", str);
+            abort();
+        }
+
+        *((int*)(*code)) = label_adr;
+        *code           += sizeof(int);
+    }
 }
 
 //=====================================================================================================

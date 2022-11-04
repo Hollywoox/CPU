@@ -1,18 +1,15 @@
-
-in
-in rbx
 in rax
-call :sum
-
+in
+in rdx
+call 13
 in
 out
 hlt
-
-sum:
 push rax
 push rbx
-;push rdx
+push rdx
 add
 add
 out
 ret
+hlt

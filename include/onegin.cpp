@@ -11,12 +11,7 @@ void CountBytes(Text* txt, char* adr)
 void MakeBuf(Text* txt, FILE* fp)
 {
     txt->buf = (char*)calloc(txt->num_of_bytes + 1, sizeof(char));
-    if(txt->buf == NULL)
-    {
-        printf("%s() at %s(%d): error:\n", __FUNCTION__, __FILE__, __LINE__);
-        printf("can't find the required memory block\n");
-        abort(); 
-    }
+    assert(txt->buf != NULL);
 
     int read = fread(txt->buf, sizeof(char), txt->num_of_bytes, fp);
     if(read != txt->num_of_bytes) 
@@ -46,12 +41,7 @@ void CountStr(Text* txt)
 void MakeStrArray(Text* txt)
 {
     txt->str_array = (string*)calloc(txt->num_of_str, sizeof(string)); 
-    if(txt->str_array == NULL)
-    {
-        printf("%s() at %s(%d): error:\n", __FUNCTION__, __FILE__, __LINE__);
-        printf("Can't find the required memory block\n");
-        abort(); 
-    }
+    assert(txt->str_array != NULL);
 
     char *begin_of_str = txt->buf;
     char *end_of_str = txt->buf;

@@ -3,7 +3,7 @@
 int main(int argc, char* argv[])
 {
     Text text = {};
-    AsmProgArray(&text, argv[1]);
+    AsmCodeArray(&text, argv[1]);
 
     struct Label labels[LABELS_SIZE];
 

@@ -1,19 +1,23 @@
 #include "cpu.h"
 
+//=====================================================================================================
+
+
 
 void Ctor(CPU* cpu, size_t ram_size, char* adr)
 {
     assert(cpu != NULL);
+    assert(adr != NULL);
 
     cpu->RAM = (elem_t*)calloc(ram_size, sizeof(elem_t));
     assert(cpu->RAM != NULL);
 
-    char* info = (char*)calloc(1, sizeof(char) + sizeof(elem_t));
+    char* info = (char*)calloc(1, 2 * sizeof(char) + sizeof(elem_t));
     assert(info != NULL);
 
-    FILE* fin = fopen(adr, "rb");
-    assert(fin != NULL);
-    fread(info, sizeof(char), sizeof(char) + sizeof(elem_t), fin);
+    FILE* bin_file = fopen(adr, "rb");
+    assert(bin_file != NULL);
+    fread(info, sizeof(char), 2 * sizeof(char) + sizeof(elem_t), bin_file);
 
     if(*info != SIGN)
     {
@@ -25,18 +29,20 @@ void Ctor(CPU* cpu, size_t ram_size, char* adr)
         printf("Warning: The version of your assemmbler is old, please, buy a new one\n");
     }
     
-    cpu->code_size = *((short int*)(info + 2));
-    cpu->code = (char*)calloc(cpu->code_size + 1, sizeof(char));
+    cpu->code_size = *((int*)(info + 2));
+    cpu->code      = (char*)calloc(cpu->code_size + 1, sizeof(char));
     assert(cpu->code != NULL);
 
-    fread(cpu->code, sizeof(char), cpu->code_size, fin);
+    fread(cpu->code, sizeof(char), cpu->code_size, bin_file);
 
-    StackCtor(&cpu->stk, 10);
+    StackCtor(&cpu->stk,    10);
     StackCtor(&cpu->ret_stk, 0);
 
-    fclose(fin);
+    fclose(bin_file);
     free(info);
 }
+
+//=====================================================================================================
 
 void Run(CPU* cpu)
 {
@@ -102,23 +108,26 @@ void Run(CPU* cpu)
             case CMD_IN:
             {
                 int cmd = *ip;
-                ip += 1;
-                elem_t arg = 0;
+                ip     += 1;
+
+                elem_t arg      = 0;
                 elem_t new_elem = 0;
                 printf("in: ");
                 scanf(elem_fmt, &new_elem);
+                printf(elem_fmt, new_elem);
+                printf("\n");
 
                 if(cmd & ARG_RAM)
                 {
                     if(cmd & ARG_IMMED)
                     {
                         arg += *((elem_t*)ip);
-                        ip += sizeof(elem_t);
+                        ip  += sizeof(elem_t);
                     }
                     if(cmd & ARG_REG)
                     {
                         arg += cpu->Regs[*ip];
-                        ip += 1;
+                        ip  += 1;
                     }
 
                     cpu->RAM[(int)arg] = new_elem;
@@ -139,18 +148,19 @@ void Run(CPU* cpu)
             case CMD_PUSH:
             {
                 int cmd = *ip;
-                ip += 1;
+                ip     += 1;
+
                 elem_t arg = 0;
 
                 if(cmd & ARG_IMMED)
                 {
                     arg += *((elem_t*)ip);
-                    ip += sizeof(elem_t);
+                    ip  += sizeof(elem_t);
                 }
                 if(cmd & ARG_REG)
                 {
                     arg += cpu->Regs[*ip];
-                    ip += 1;
+                    ip  += 1;
                 }
                 if(cmd & ARG_RAM)
                 {
@@ -164,7 +174,8 @@ void Run(CPU* cpu)
             case CMD_POP:
             {
                 int cmd = *ip;
-                ip += 1;
+                ip     += 1;
+
                 elem_t arg = 0;
 
                 if(cmd & ARG_RAM)
@@ -172,12 +183,12 @@ void Run(CPU* cpu)
                     if(cmd & ARG_IMMED)
                     {
                         arg += *((elem_t*)ip);
-                        ip += sizeof(elem_t);
+                        ip  += sizeof(elem_t);
                     }
                     if(cmd & ARG_REG)
                     {
                         arg += cpu->Regs[*ip];
-                        ip += 1;
+                        ip  += 1;
                     }
 
                     cpu->RAM[(int)arg] = StackPop(&cpu->stk);
@@ -185,7 +196,7 @@ void Run(CPU* cpu)
                 else if(cmd & ARG_REG)
                 {
                     cpu->Regs[*ip] = StackPop(&cpu->stk);
-                    ip += 1;
+                    ip            += 1;
                 }
                 else
                 {
@@ -202,15 +213,15 @@ void Run(CPU* cpu)
 
             case CMD_JMP:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
-                ip = cpu->code + adr;
+                ip      = cpu->code + adr;
                 break;
             }
 
             case CMD_JB:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -231,7 +242,7 @@ void Run(CPU* cpu)
 
             case CMD_JBE:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -252,7 +263,7 @@ void Run(CPU* cpu)
 
             case CMD_JA:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -273,7 +284,7 @@ void Run(CPU* cpu)
 
             case CMD_JAE:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -294,7 +305,7 @@ void Run(CPU* cpu)
 
             case CMD_JE:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -315,7 +326,7 @@ void Run(CPU* cpu)
 
             case CMD_JNE:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
 
                 elem_t var1 = StackPop(&cpu->stk);
@@ -336,7 +347,7 @@ void Run(CPU* cpu)
 
             case CMD_CALL:
             {
-                ip += 1;
+                ip     += 1;
                 int adr = *((int*)ip);
                 int ret_adr = ip + sizeof(int) - cpu->code;
                 StackPush(&cpu->ret_stk, ret_adr);
@@ -348,7 +359,7 @@ void Run(CPU* cpu)
             case CMD_RET:
             {
                 int ret_adr = StackPop(&cpu->ret_stk);
-                ip = cpu->code + ret_adr;
+                ip          = cpu->code + ret_adr;
                 break;
             }
 
@@ -360,6 +371,8 @@ void Run(CPU* cpu)
         }
     }
 }
+
+//=====================================================================================================
 
 void Dtor(CPU* cpu)
 {

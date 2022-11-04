@@ -1,1 +1,379 @@
 
+StackPop() at include/stack.cpp(70):
+Stack[0x16b5d32c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x120705e18]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16d16f2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x144e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b9f32c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x12b606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16fd8b2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x12fe06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16fa272c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x132e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16d1272c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x149606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b1c32c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x129e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16f8632c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x13ae06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b8772c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x121e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b2132c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x14ee06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16f55b2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x12d7043c8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b52f2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x12ff043c8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16ba232c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x11ef04098]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16dd9f2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x11ce06bc8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16b4232c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x12e606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16daa72c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x137606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16ba2f2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x145606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16fba32c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x138606bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16bc6f2c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x121e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16efc72c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x142e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity
+StackPop() at include/stack.cpp(70):
+Stack[0x16d4732c0](error) "cpu->stk" at Ctor() at SoftCPU/cpu.cpp(38)
+{
+	size = 18446744073709551615
+	capacity = 10
+	error code = 1048
+	left stack canary = 13465179263647739917
+	right stack canary = 13465179263647739917
+	left data canary = 13465179263647739917
+	right data canary = 13465179263647739917
+	data[0x157e06bd8]
+	{
+	}
+}
+
+Error: the hash of the structure was changed!
+Error: size is negative
+Error: size is bigger than capacity

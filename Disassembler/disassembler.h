@@ -7,23 +7,7 @@
 #define VERSION 2
 #define SIGN 0xC
 
-typedef struct
-{
-    char* code;
-    int code_size;
-    Stack stk;
-    Stack ret_stk;
-    elem_t Regs[5];
-    elem_t* RAM;
-} CPU;
-
-enum registers
-{
-    REG_RAX = 1,
-    REG_RBX,
-    REG_RCX,
-    REG_RDX
-};
+#define PrintErrorMessage() printf("%s() at %s(%d): error:\n", __FUNCTION__, __FILE__, __LINE__)
 
 enum args
 {
@@ -56,9 +40,6 @@ enum comands
     CMD_RET
 };
 
+char* DisasmCodeArray(char* file);
 
-void Ctor(CPU* cpu, size_t ram_size, char* adr);
-
-void Run(CPU* cpu);
-
-void Dtor(CPU* cpu);
+void Disassemble(char* code);

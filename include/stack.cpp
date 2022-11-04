@@ -75,14 +75,15 @@ elem_t StackPop(Stack* stk)
     if(stk->size - 1 == stk->capacity / 2)
     {
         StackResizeDown(stk);
-    }
-
-    stk->size--;
-    if(stk->size != 0)
-    {
-        stk->data[stk->size] = POISON;
+        stk->size--;
     }
     
+    else
+    {
+        stk->size--;
+        stk->data[stk->size] = POISON; 
+    }
+
     stk->st_hash = HashFuncStack(stk);
     stk->data_hash = HashFuncData(stk);
 
@@ -264,6 +265,8 @@ void StackDump_(Stack* stk, const char* function, const char* file, int line)
     fprintf(log, "\terror code = %d\n", stk->error);
     fprintf(log, "\tleft stack canary = %llu\n", stk->left_protector);
     fprintf(log, "\tright stack canary = %llu\n", stk->right_protector);
+    fprintf(log, "\tleft data canary = %llu\n", *((canary*)(stk->data - SHIFT)));
+    fprintf(log, "\tright data canary = %llu\n", *((canary*)(stk->data + stk->capacity)));
     fprintf(log, "\tdata[%p]\n", stk->data);
     fprintf(log, "\t{\n");
     if(!stk->error) StackPrint(stk, log);

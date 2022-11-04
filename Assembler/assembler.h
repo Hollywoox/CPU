@@ -41,7 +41,7 @@ enum comands
 };
 
 
-void AsmProgArray(Text* program, char* file);
+void AsmCodeArray(Text* program, char* file);
 
 void Compile(Text* text, struct Label* labels, int num_of_compilation);
 
