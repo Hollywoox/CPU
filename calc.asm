@@ -1,5 +1,5 @@
 
-in
+in rdx
 in rbx
 in rax
 call :sum
@@ -11,7 +11,7 @@ hlt
 sum:
 push rax
 push rbx
-;push rdx
+push rdx
 add
 add
 out

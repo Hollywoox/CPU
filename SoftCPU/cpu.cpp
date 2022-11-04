@@ -17,6 +17,7 @@ void Ctor(CPU* cpu, size_t ram_size, char* adr)
 
     FILE* bin_file = fopen(adr, "rb");
     assert(bin_file != NULL);
+
     fread(info, sizeof(char), 2 * sizeof(char) + sizeof(elem_t), bin_file);
 
     if(*info != SIGN)
@@ -114,8 +115,6 @@ void Run(CPU* cpu)
                 elem_t new_elem = 0;
                 printf("in: ");
                 scanf(elem_fmt, &new_elem);
-                printf(elem_fmt, new_elem);
-                printf("\n");
 
                 if(cmd & ARG_RAM)
                 {
@@ -371,7 +370,7 @@ void Run(CPU* cpu)
         }
     }
 }
-
+ 
 //=====================================================================================================
 
 void Dtor(CPU* cpu)

@@ -35,7 +35,7 @@ char* DisasmCodeArray(char* adr)
 
 void Disassemble(char* code)
 {
-    FILE* asm_file = fopen("result.asm", "w");
+    FILE* asm_file = fopen("result.asm", "wb");
     if(asm_file == NULL)
     {
         PrintErrorMessage();

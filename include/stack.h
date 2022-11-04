@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <math.h>
 
-#define INT
+#define DOUBLE
 #define CANARY_PROT
 
 #ifdef CANARY_PROT

@@ -1,7 +1,7 @@
-in rax
-in
 in rdx
-call 13
+in rbx
+in rax
+call 14
 in
 out
 hlt
