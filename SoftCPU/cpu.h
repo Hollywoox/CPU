@@ -4,7 +4,7 @@
 #include "../include/onegin.h"
 #include "../include/stack.h"
 
-#define VERSION 2
+#define VERSION 3
 #define SIGN 0xC
 
 typedef struct
@@ -32,29 +32,21 @@ enum args
     ARG_RAM = 0x80
 };
 
+#define DEF_CMD(name, num, ...) CMD_##name = num,
+
 enum comands
 {
-    CMD_HLT,
-    CMD_PUSH,
-    CMD_POP,
-    CMD_ADD,
-    CMD_SUB,
-    CMD_MUL,
-    CMD_DIV,
-    CMD_DUP,
-    CMD_OUT,
-    CMD_DUMP,
-    CMD_IN,
-    CMD_JMP,
-    CMD_JB,
-    CMD_JBE,
-    CMD_JA,
-    CMD_JAE,
-    CMD_JE,
-    CMD_JNE,
-    CMD_CALL,
-    CMD_RET
+    #include "../include/cmd.h"
 };
+
+#undef DEF_CMD
+
+#define DEF_CMD(name, num, arg, code_cpu)                    \
+                                            case num:        \
+                                            {                \
+                                                code_cpu     \
+                                                break;       \
+                                            }                
 
 
 void Ctor(CPU* proc, size_t ram_size, const char* adr);

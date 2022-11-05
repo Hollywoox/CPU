@@ -1,0 +1,285 @@
+# 1 "cpu.cpp"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 414 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "cpu.cpp" 2
+# 1 "./cpu.h" 1
+# 10 "./cpu.h"
+typedef struct
+{
+    char* code;
+    int code_size;
+    Stack stk;
+    Stack ret_stk;
+    elem_t Regs[5];
+    elem_t* RAM;
+} CPU;
+
+enum registers
+{
+    REG_RAX = 1,
+    REG_RBX,
+    REG_RCX,
+    REG_RDX
+};
+
+enum args
+{
+    ARG_IMMED = 0x20,
+    ARG_REG = 0x40,
+    ARG_RAM = 0x80
+};
+
+
+
+enum comands
+{
+# 1 "./../include/cmd.h" 1
+CMD_HLT = 0,
+
+
+
+
+CMD_PUSH = 1,
+# 31 "./../include/cmd.h"
+CMD_POP = 2,
+# 64 "./../include/cmd.h"
+CMD_ADD = 3,
+
+
+
+
+
+CMD_SUB = 4,
+
+
+
+
+
+CMD_MUL = 5,
+
+
+
+
+
+CMD_DIV = 6,
+
+
+
+
+
+
+CMD_DUP = 7,
+
+
+
+
+
+
+
+CMD_OUT = 8,
+
+
+
+
+
+
+
+CMD_DUMP = 9,
+
+
+
+
+
+CMD_IN = 10,
+# 147 "./../include/cmd.h"
+CMD_JMP = 11,
+
+
+
+
+
+
+CMD_JB = 12,
+# 174 "./../include/cmd.h"
+CMD_JBE = 13,
+# 194 "./../include/cmd.h"
+CMD_JA = 14,
+# 214 "./../include/cmd.h"
+CMD_JAE = 15,
+# 234 "./../include/cmd.h"
+CMD_JE = 16,
+# 254 "./../include/cmd.h"
+CMD_JNE = 17,
+# 274 "./../include/cmd.h"
+CMD_CALL = 18,
+# 284 "./../include/cmd.h"
+CMD_RET = 19,
+# 40 "./cpu.h" 2
+};
+# 52 "./cpu.h"
+void Ctor(CPU* proc, size_t ram_size, const char* adr);
+
+void Run(CPU* proc);
+
+void Dtor(CPU* proc);
+# 2 "cpu.cpp" 2
+
+
+
+
+void Ctor(CPU* proc, size_t ram_size, const char* adr)
+{
+    assert(proc != NULL);
+    assert(adr != NULL);
+
+    proc->RAM = (elem_t*)calloc(ram_size, sizeof(elem_t));
+    assert(proc->RAM != NULL);
+
+    char* info = (char*)calloc(1, 2 * sizeof(char) + sizeof(elem_t));
+    assert(info != NULL);
+
+    FILE* bin_file = fopen(adr, "rb");
+    assert(bin_file != NULL);
+
+    fread(info, sizeof(char), 2 * sizeof(char) + sizeof(elem_t), bin_file);
+
+    if(*info != 0xC)
+    {
+        printf("Error: The signature of the file does not match the signature of the CPU\n");
+        abort();
+    }
+    if(*(info + 1) != 2)
+    {
+        printf("Warning: The version of your CPU is old, please, buy a new one\n");
+    }
+
+    proc->code_size = *((int*)(info + 2));
+    proc->code = (char*)calloc(proc->code_size + 1, sizeof(char));
+    assert(proc->code != NULL);
+
+    fread(proc->code, sizeof(char), proc->code_size, bin_file);
+
+    StackCtor(&proc->stk, 10);
+    StackCtor(&proc->ret_stk, 0);
+
+    fclose(bin_file);
+    free(info);
+}
+
+
+
+void Run(CPU* proc)
+{
+    char* ip = proc->code;
+    while(ip)
+    {
+        switch(*ip & 0x1F)
+        {
+# 1 "./../include/cmd.h" 1
+case 0: { { return;} break; }
+
+
+
+
+case 1: { { int cmd = *ip; ip += 1; elem_t arg = 0; if(cmd & ARG_IMMED) { arg += *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { arg += proc->Regs[*ip]; ip += 1; } if(cmd & ARG_RAM) { arg = proc->RAM[(int)arg]; } StackPush(&proc->stk, arg);} break; }
+# 31 "./../include/cmd.h"
+case 2: { { int cmd = *ip; ip += 1; elem_t arg = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { arg += *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { arg += proc->Regs[*ip]; ip += 1; } proc->RAM[(int)arg] = StackPop(&proc->stk); } else if(cmd & ARG_REG) { proc->Regs[*ip] = StackPop(&proc->stk); ip += 1; } else { StackPop(&proc->stk); }} break; }
+# 64 "./../include/cmd.h"
+case 3: { { StackPush(&proc->stk, StackPop(&proc->stk) + StackPop(&proc->stk)); ip += 1;} break; }
+
+
+
+
+
+case 4: { { StackPush(&proc->stk, -StackPop(&proc->stk) + StackPop(&proc->stk)); ip += 1;} break; }
+
+
+
+
+
+case 5: { { StackPush(&proc->stk, StackPop(&proc->stk) * StackPop(&proc->stk)); ip += 1;} break; }
+
+
+
+
+
+case 6: { { elem_t last = StackPop(&proc->stk); StackPush(&proc->stk, StackPop(&proc->stk) / last); ip += 1;} break; }
+
+
+
+
+
+
+case 7: { { elem_t last = StackPop(&proc->stk); StackPush(&proc->stk, last); StackPush(&proc->stk, last); ip += 1;} break; }
+
+
+
+
+
+
+
+case 8: { { printf("out: "); printf(elem_fmt, StackPop(&proc->stk)); printf("\n"); ip += 1;} break; }
+
+
+
+
+
+
+
+case 9: { { StackDump(&proc->stk); ip += 1;} break; }
+
+
+
+
+
+case 10: { { int cmd = *ip; ip += 1; elem_t arg = 0; elem_t new_elem = 0; printf("in: "); scanf(elem_fmt, &new_elem); if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { arg += *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { arg += proc->Regs[*ip]; ip += 1; } proc->RAM[(int)arg] = new_elem; } else if(cmd & ARG_REG) { proc->Regs[*ip] = new_elem; ip += 1; } else { StackPush(&proc->stk, new_elem); }} break; }
+# 147 "./../include/cmd.h"
+case 11: { { ip += 1; int adr = *((int*)ip); ip = proc->code + adr;} break; }
+
+
+
+
+
+
+case 12: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 < var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 174 "./../include/cmd.h"
+case 13: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 <= var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 194 "./../include/cmd.h"
+case 14: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 > var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 214 "./../include/cmd.h"
+case 15: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 >= var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 234 "./../include/cmd.h"
+case 16: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 == var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 254 "./../include/cmd.h"
+case 17: { { ip += 1; int adr = *((int*)ip); elem_t var1 = StackPop(&proc->stk); elem_t var2 = StackPop(&proc->stk); if(var1 != var2) { ip = proc->code + adr; } else { ip += sizeof(int); } StackPush(&proc->stk, var2); StackPush(&proc->stk, var1);} break; }
+# 274 "./../include/cmd.h"
+case 18: { { ip += 1; int adr = *((int*)ip); int ret_adr = ip + sizeof(int) - proc->code; StackPush(&proc->ret_stk, ret_adr); ip = proc->code + adr;} break; }
+# 284 "./../include/cmd.h"
+case 19: { { int ret_adr = StackPop(&proc->ret_stk); ip = proc->code + ret_adr;} break; }
+# 55 "cpu.cpp" 2
+
+            default:
+            {
+                printf("error: unknown command\n");
+                return;
+            }
+        }
+    }
+}
+
+
+
+void Dtor(CPU* proc)
+{
+    free(proc->RAM);
+    proc->RAM = NULL;
+
+    free(proc->code);
+    proc->code = NULL;
+
+    StackDtor(&proc->stk);
+    StackDtor(&proc->ret_stk);
+}

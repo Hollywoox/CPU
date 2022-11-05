@@ -1,0 +1,252 @@
+# 1 "disassembler.cpp"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 414 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "disassembler.cpp" 2
+# 1 "./disassembler.h" 1
+# 12 "./disassembler.h"
+enum args
+{
+    ARG_IMMED = 0x20,
+    ARG_REG = 0x40,
+    ARG_RAM = 0x80
+};
+
+
+
+enum comands
+{
+# 1 "./../include/cmd.h" 1
+CMD_HLT = 0,
+
+
+
+
+CMD_PUSH = 1,
+# 31 "./../include/cmd.h"
+CMD_POP = 2,
+# 64 "./../include/cmd.h"
+CMD_ADD = 3,
+
+
+
+
+
+CMD_SUB = 4,
+
+
+
+
+
+CMD_MUL = 5,
+
+
+
+
+
+CMD_DIV = 6,
+
+
+
+
+
+
+CMD_DUP = 7,
+
+
+
+
+
+
+
+CMD_OUT = 8,
+
+
+
+
+
+
+
+CMD_DUMP = 9,
+
+
+
+
+
+CMD_IN = 10,
+# 147 "./../include/cmd.h"
+CMD_JMP = 11,
+
+
+
+
+
+
+CMD_JB = 12,
+# 174 "./../include/cmd.h"
+CMD_JBE = 13,
+# 194 "./../include/cmd.h"
+CMD_JA = 14,
+# 214 "./../include/cmd.h"
+CMD_JAE = 15,
+# 234 "./../include/cmd.h"
+CMD_JE = 16,
+# 254 "./../include/cmd.h"
+CMD_JNE = 17,
+# 274 "./../include/cmd.h"
+CMD_CALL = 18,
+# 284 "./../include/cmd.h"
+CMD_RET = 19,
+# 24 "./disassembler.h" 2
+};
+# 113 "./disassembler.h"
+char* DisasmCodeArray(const char* file);
+
+void Disassemble(char* code);
+# 2 "disassembler.cpp" 2
+
+
+
+char* DisasmCodeArray(const char* adr)
+{
+    assert(adr != NULL);
+
+    char* info = (char*)calloc(1, 2 * sizeof(char) + sizeof(elem_t));
+    assert(info != NULL);
+
+    FILE* bin_file = fopen(adr, "r");
+    if(bin_file == NULL)
+    {
+        printf("%s() at %s(%d): error:\n", __FUNCTION__, "disassembler.cpp", 15);
+        printf("cant't open a file with binary code\n");
+        abort();
+    }
+
+    fread(info, sizeof(char), 2 * sizeof(char) + sizeof(elem_t), bin_file);
+    int code_size = *((int*)(info + 2));
+
+    char* code = (char*)calloc(code_size + 1, sizeof(char));
+    assert(code != NULL);
+
+    fread(code, sizeof(char), code_size, bin_file);
+
+    fclose(bin_file);
+    free(info);
+
+    return code;
+}
+
+
+
+void Disassemble(char* code)
+{
+    FILE* asm_file = fopen("result.asm", "wb");
+    if(asm_file == NULL)
+    {
+        printf("%s() at %s(%d): error:\n", __FUNCTION__, "disassembler.cpp", 41);
+        printf("can't open file for asm code\n");
+        abort();
+    }
+
+    char* ip = code;
+    while(ip)
+    {
+        switch(*ip & 0x1F)
+        {
+# 1 "./../include/cmd.h" 1
+case 0: { if(0 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "HLT"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "HLT"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "HLT"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+case 1: { if(1 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(1 == 0) { fprintf(asm_file, "PUSH"); fprintf(asm_file, "\n"); ip += 1; break; } else if(1 == 1) { fprintf(asm_file, "PUSH"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 1 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 1 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 1); fprintf(asm_file, "\n"); } break; } else if(1 == 2) { fprintf(asm_file, "PUSH"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 31 "./../include/cmd.h"
+case 2: { if(2 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(1 == 0) { fprintf(asm_file, "POP"); fprintf(asm_file, "\n"); ip += 1; break; } else if(1 == 1) { fprintf(asm_file, "POP"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 1 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 1 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 1); fprintf(asm_file, "\n"); } break; } else if(1 == 2) { fprintf(asm_file, "POP"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 64 "./../include/cmd.h"
+case 3: { if(3 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "ADD"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "ADD"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "ADD"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+case 4: { if(4 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "SUB"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "SUB"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "SUB"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+case 5: { if(5 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "MUL"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "MUL"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "MUL"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+case 6: { if(6 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "DIV"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "DIV"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "DIV"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+
+case 7: { if(7 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "DUP"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "DUP"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "DUP"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+
+
+case 8: { if(8 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "OUT"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "OUT"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "OUT"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+
+
+case 9: { if(9 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "DUMP"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "DUMP"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "DUMP"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+case 10: { if(10 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(1 == 0) { fprintf(asm_file, "IN"); fprintf(asm_file, "\n"); ip += 1; break; } else if(1 == 1) { fprintf(asm_file, "IN"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 1 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 1 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 1); fprintf(asm_file, "\n"); } break; } else if(1 == 2) { fprintf(asm_file, "IN"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 147 "./../include/cmd.h"
+case 11: { if(11 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JMP"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JMP"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JMP"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+
+
+
+
+
+
+case 12: { if(12 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JB"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JB"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JB"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 174 "./../include/cmd.h"
+case 13: { if(13 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JBE"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JBE"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JBE"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 194 "./../include/cmd.h"
+case 14: { if(14 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JA"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JA"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JA"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 214 "./../include/cmd.h"
+case 15: { if(15 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JAE"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JAE"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JAE"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 234 "./../include/cmd.h"
+case 16: { if(16 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JE"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JE"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JE"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 254 "./../include/cmd.h"
+case 17: { if(17 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "JNE"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "JNE"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "JNE"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 274 "./../include/cmd.h"
+case 18: { if(18 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(2 == 0) { fprintf(asm_file, "CALL"); fprintf(asm_file, "\n"); ip += 1; break; } else if(2 == 1) { fprintf(asm_file, "CALL"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 2 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 2 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 2); fprintf(asm_file, "\n"); } break; } else if(2 == 2) { fprintf(asm_file, "CALL"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 284 "./../include/cmd.h"
+case 19: { if(19 == 0) { fprintf(asm_file, "hlt\n"); if(*(ip + 1) == 0) { fclose(asm_file); return; } ip += 1; break; } else if(0 == 0) { fprintf(asm_file, "RET"); fprintf(asm_file, "\n"); ip += 1; break; } else if(0 == 1) { fprintf(asm_file, "RET"); int cmd = *ip; ip += 1; int index = 0; char reg = 0; elem_t 0 = 0; if(cmd & ARG_RAM) { if(cmd & ARG_IMMED) { index = *((elem_t*)ip); ip += sizeof(elem_t); } if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; } fprintf(asm_file, " ["); if(reg != 0) fprintf(asm_file, "R%cX + ", reg); fprintf(asm_file, "%d]\n", index); } else if(cmd & ARG_REG) { reg = *ip + 'A' - 1; ip += 1; fprintf(asm_file, " R%cX\n", reg); } else { 0 = *((elem_t*)ip); ip += sizeof(elem_t); fprintf(asm_file, " "); fprintf(asm_file, elem_fmt, 0); fprintf(asm_file, "\n"); } break; } else if(0 == 2) { fprintf(asm_file, "RET"); frpintf(asm_file, " "); ip += 1; int adr = *((int*)ip); fprintf(asm_file, "%d\n", adr); ip += sizeof(int); break; } }
+# 52 "disassembler.cpp" 2
+
+            default:
+            {
+                printf("error: unknown command\n");
+                fclose(asm_file);
+                return;
+            }
+
+        }
+    }
+
+    fclose(asm_file);
+}

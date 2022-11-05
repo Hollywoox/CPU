@@ -1,15 +1,15 @@
-in rdx
-in rbx
-in rax
-call 14
-in
-out
-hlt
-push rax
-push rbx
-push rdx
-add
-add
-out
-ret
-hlt
+IN RDX
+IN RBX
+IN RAX
+CALL 14
+IN
+OUT
+HLT
+PUSH RAX
+PUSH RBX
+PUSH RDX
+ADD
+ADD
+OUT
+RET
+HLT

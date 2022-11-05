@@ -59,7 +59,8 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
         GetWord(text->str_array[line].str, cmd);
         size_t cmd_len = strlen(cmd);
 
-        if(cmd[cmd_len - 1] == ':')
+        #include "../include/cmd.h"
+        /*else*/ if(cmd[cmd_len - 1] == ':')
         {
             cmd[cmd_len - 1]         = '\0';
             labels[label_index].name = cmd;
@@ -67,177 +68,8 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             cmd                      = NULL;
             ++label_index;
         }
-
-        else if(Stricmp(cmd, "push") == 0)
-        {
-            *ip = CMD_PUSH;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_PUSH);
-            ++ip;
-
-            GetArgs(text->str_array[line].str, &ip, cmd, listing);
-        }
-
-        else if(Stricmp(cmd, "pop") == 0)
-        {
-            *ip = CMD_POP;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_POP);
-            ++ip;
-
-            GetArgs(text->str_array[line].str, &ip, cmd, listing);
-        }
-
-        else if(Stricmp(cmd, "add") == 0)
-        {
-            *ip = CMD_ADD;
-            fprintf(listing, "%#8lX %2X   ADD\n", ip - code - size, CMD_ADD);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "sub") == 0)
-        {
-            *ip = CMD_SUB;
-            fprintf(listing, "%#8lX %2X   SUB\n", ip - code - size, CMD_SUB);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "mul") == 0)
-        {
-            *ip = CMD_MUL;
-            fprintf(listing, "%#8lX %2X   MUL\n", ip - code - size, CMD_MUL);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "div") == 0)
-        {
-            *ip = CMD_DIV;
-            fprintf(listing, "%#8lX %2X   DIV\n", ip - code - size, CMD_DIV);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "dup") == 0)
-        {
-            *ip = CMD_DUP;
-            fprintf(listing, "%#8lX %2X   DUP\n", ip - code - size, CMD_DUP);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "out") == 0)
-        {
-            *ip = CMD_OUT;
-            fprintf(listing, "%#8lX %2X   OUT\n", ip - code - size, CMD_OUT);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "dump") == 0)
-        {
-            *ip = CMD_DUMP;
-            fprintf(listing, "%#8lX %2X   DUMP\n", ip - code - size, CMD_DUMP);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "in") == 0)
-        {
-            *ip = CMD_IN;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_IN);
-            ++ip;
-
-            GetArgs(text->str_array[line].str, &ip, cmd, listing);
-        }
-
-        else if(Stricmp(cmd, "hlt") == 0)
-        {
-            *ip = CMD_HLT;
-            fprintf(listing, "%#8lX %2X   HLT\n", ip - code - size, CMD_HLT);
-            ++ip;
-        }
-
-        else if(Stricmp(cmd, "jmp") == 0)
-        {
-            *ip = CMD_JMP;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JMP);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JUMP %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "jb") == 0)
-        {
-            *ip = CMD_JB;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JB);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JB %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-       else if(Stricmp(cmd, "jbe") == 0)
-        {
-            *ip = CMD_JBE;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JBE);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JBE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        } 
-
-        else if(Stricmp(cmd, "ja") == 0)
-        {
-            *ip = CMD_JA;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JA);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JA %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "jae") == 0)
-        {
-            *ip = CMD_JAE;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JAE);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JAE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "je") == 0)
-        {
-            *ip = CMD_JE;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JE);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "jne") == 0)
-        {
-            *ip = CMD_JNE;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JNE);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X JNE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "call") == 0)
-        {
-            *ip = CMD_CALL;
-            fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_CALL);
-            ++ip;
-
-            GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);
-            fprintf(listing, "%X CALL %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
-        }
-
-        else if(Stricmp(cmd, "ret") == 0)
-        {
-            *ip = CMD_RET;
-            fprintf(listing, "%#8lX %2X   RET\n", ip - code - size, CMD_RET);
-            ++ip;
-        }
-
+        #undef DEF_CMD
+        
         else if(cmd[0] == '\0')
         {
             //skip, if the string is empty
@@ -324,7 +156,7 @@ void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
 
     if(cmd[0] == '[')
     {
-        if(cmd[1] == 'r' && cmd[3] == 'x')
+        if(tolower(cmd[1]) == 'r' && tolower(cmd[3]) == 'x')
         {
             const char* plus_pointer = strchr(str, '+');
             if(plus_pointer != NULL)
@@ -332,7 +164,7 @@ void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
                 int index;
                 sscanf(plus_pointer + 1, "%d", &index);
 
-                char reg = cmd[2] - 'a' + 1;
+                char reg = tolower(cmd[2]) - 'a' + 1;
                 if(reg > 4)
                 {
                     printf("Syntax error: unknown register\n");
@@ -351,7 +183,7 @@ void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
 
             else
             {
-                char reg = cmd[2] - 'a' + 1;
+                char reg = tolower(cmd[2]) - 'a' + 1;
                 if(reg > 4)
                 {
                     printf("Syntax error: unknown register\n");
@@ -381,9 +213,9 @@ void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
         }
     }
 
-    else if(cmd[0] == 'r' && cmd[2] == 'x')
+    else if(tolower(cmd[0]) == 'r' && tolower(cmd[2]) == 'x')
     {
-        char reg = cmd[1] - 'a' + 1;
+        char reg = tolower(cmd[1]) - 'a' + 1;
         if(reg > 4)
         {
             printf("Syntax error: unknown register\n");

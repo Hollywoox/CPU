@@ -1,0 +1,456 @@
+# 1 "assembler.cpp"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 414 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "assembler.cpp" 2
+# 1 "./assembler.h" 1
+# 15 "./assembler.h"
+struct Label
+{
+    int adr;
+    char* name = NULL;
+};
+
+
+
+
+enum comands
+{
+# 1 "./../include/cmd.h" 1
+CMD_HLT = 0,
+CMD_PUSH = 1,
+CMD_POP = 2,
+CMD_ADD = 3,
+CMD_SUB = 4,
+CMD_MUL = 5,
+CMD_DIV = 6,
+CMD_DUP = 7,
+CMD_OUT = 8,
+CMD_DUMP = 9,
+CMD_IN = 10,
+CMD_JMP = 11,
+CMD_JB = 12,
+CMD_JBE = 13,
+CMD_JA = 14,
+CMD_JAE = 15,
+CMD_JE = 16,
+CMD_JNE = 17,
+CMD_CALL = 18,
+CMD_RET = 19,
+# 27 "./assembler.h" 2
+};
+# 61 "./assembler.h"
+void AsmCodeArray(Text* program, const char* file);
+
+void Compile(Text* text, struct Label* labels, int num_of_compilation);
+
+int GetWord(const char* str, char* cmd);
+
+void GetArgs(const char* str, char** code, char* cmd, FILE* listing);
+
+void GetLabel(const char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation);
+
+int LabelFind(const char* label, struct Label* labels);
+
+int IsNum(const char* str);
+
+void StrToUpper(char* str);
+
+int Stricmp(const char* str1, const char* str2);
+
+void ClearLabels(struct Label* labels);
+# 2 "assembler.cpp" 2
+
+
+
+void AsmCodeArray(Text* text, const char* file)
+{
+    assert(text != NULL);
+    assert(file != NULL);
+
+    FILE* asm_code = fopen(file, "r");
+    if(asm_code == NULL)
+    {
+        printf("%s() at %s(%d): error:\n", __FUNCTION__, "assembler.cpp", 13);
+        printf("can't open the file!\n");
+        abort();
+    }
+
+    CountBytes(text, file);
+
+    MakeBuf(text, asm_code);
+
+    CountStr(text);
+
+    MakeStrArray(text);
+
+    fclose(asm_code);
+}
+
+
+
+void Compile(Text* text, struct Label* labels, int num_of_compilation)
+{
+    assert(text != NULL);
+    assert(labels != NULL);
+
+    FILE* listing = fopen("listing.txt", "w");
+    if(listing == NULL)
+    {
+        printf("%s() at %s(%d): error:\n", __FUNCTION__, "assembler.cpp", 39);
+        printf("can't open file for listing\n");
+        abort();
+    }
+
+    fprintf(listing, "Signature: %X\nCPU version: %d\n\n", 0xC, 2);
+
+    size_t size = 2 * sizeof(char) + sizeof(elem_t);
+    char* code = (char*)calloc(text->num_of_str + 1, size);
+    assert(code != NULL);
+
+    *code = 0xC;
+    *(code + 1) = 2;
+    char* ip = code + size;
+
+    int line = 0;
+    int label_index = 0;
+    while(line < text->num_of_str)
+    {
+        char *cmd = (char*)calloc(text->str_array[line].size, sizeof(char));
+        GetWord(text->str_array[line].str, cmd);
+        size_t cmd_len = strlen(cmd);
+
+        if(cmd[cmd_len - 1] == ':')
+        {
+            cmd[cmd_len - 1] = '\0';
+            labels[label_index].name = cmd;
+            labels[label_index].adr = ip - code - size;
+            cmd = NULL;
+            ++label_index;
+        }
+
+# 1 "./../include/cmd.h" 1
+if(Stricmp(cmd, "HLT") == 0) { *ip = 0; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 0, "HLT"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 0); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 0); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "HLT", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "PUSH") == 0) { *ip = 1; if(1 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 1, "PUSH"); ++ip; } else if(1 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 1); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 1); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "PUSH", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "POP") == 0) { *ip = 2; if(1 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 2, "POP"); ++ip; } else if(1 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 2); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 2); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "POP", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "ADD") == 0) { *ip = 3; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 3, "ADD"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 3); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 3); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "ADD", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "SUB") == 0) { *ip = 4; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 4, "SUB"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 4); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 4); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "SUB", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "MUL") == 0) { *ip = 5; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 5, "MUL"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 5); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 5); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "MUL", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "DIV") == 0) { *ip = 6; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 6, "DIV"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 6); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 6); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "DIV", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "DUP") == 0) { *ip = 7; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 7, "DUP"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 7); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 7); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "DUP", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "OUT") == 0) { *ip = 8; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 8, "OUT"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 8); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 8); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "OUT", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "DUMP") == 0) { *ip = 9; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 9, "DUMP"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 9); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 9); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "DUMP", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "IN") == 0) { *ip = 10; if(1 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 10, "IN"); ++ip; } else if(1 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 10); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 10); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "IN", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JMP") == 0) { *ip = 11; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 11, "JMP"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 11); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 11); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JMP", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JB") == 0) { *ip = 12; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 12, "JB"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 12); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 12); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JB", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JBE") == 0) { *ip = 13; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 13, "JBE"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 13); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 13); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JBE", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JA") == 0) { *ip = 14; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 14, "JA"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 14); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 14); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JA", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JAE") == 0) { *ip = 15; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 15, "JAE"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 15); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 15); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JAE", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JE") == 0) { *ip = 16; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 16, "JE"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 16); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 16); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JE", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "JNE") == 0) { *ip = 17; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 17, "JNE"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 17); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 17); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "JNE", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "CALL") == 0) { *ip = 18; if(2 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 18, "CALL"); ++ip; } else if(2 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 18); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 18); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "CALL", *((int*)(ip - sizeof(int)))); } } else
+if(Stricmp(cmd, "RET") == 0) { *ip = 19; if(0 == 0) { fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, 19, "RET"); ++ip; } else if(0 == 1) { fprintf(listing, "%#8lX %2X ", ip - code - size, 19); ++ip; GetArgs(text->str_array[line].str, &ip, cmd, listing); } else { fprintf(listing, "%#8lX %2X ", ip - code - size, 19); ++ip; GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation); fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), "RET", *((int*)(ip - sizeof(int)))); } } else
+# 72 "assembler.cpp" 2
+
+        {
+            printf("Syntax error: unknown command\n");
+            printf("%s\n", text->str_array[line].str);
+            abort();
+        }
+
+
+        free(cmd);
+        ++line;
+    }
+
+    *((int*)(code + 2)) = ip - code - size;
+
+    FILE* fout = fopen("code.bin", "wb");
+    if(fout == NULL)
+    {
+        printf("%s() at %s(%d): error:\n", __FUNCTION__, "assembler.cpp", 89);
+        printf("can't open a file for binary code\n");
+        abort();
+    }
+
+    fwrite(code, sizeof(char), ip - code, fout);
+    free(code);
+    fclose(listing);
+    fclose(fout);
+}
+
+
+
+int GetWord(const char* str, char* cmd)
+{
+    assert(str != NULL);
+    assert(cmd != NULL);
+
+    int res = sscanf(str, "%s", cmd);
+    if(res < 0)
+    {
+        return res;
+    }
+
+    char* end = strchr(cmd, ';');
+    if(end == NULL)
+    {
+        return 0;
+    }
+
+    while(*end != '\0' && end != NULL)
+    {
+        *end = '\0';
+        ++end;
+    }
+
+    return 0;
+}
+
+
+
+void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
+{
+    assert(str != NULL);
+    assert(code != NULL);
+    assert(cmd != NULL);
+    assert(listing != NULL);
+
+    size_t cmd_len = strlen(cmd);
+    char* cmd_name = (char*)calloc(cmd_len, sizeof(char));
+    int shift = strstr(str, cmd) - str + cmd_len;
+
+    strcpy(cmd_name, cmd);
+    StrToUpper(cmd_name);
+
+    if(GetWord(str + shift, cmd) < 0)
+    {
+        fprintf(listing, "  %s\n", cmd_name);
+        return;
+    }
+
+    cmd_len = strlen(cmd);
+
+    if(cmd[0] == '[')
+    {
+        if(cmd[1] == 'r' && cmd[3] == 'x')
+        {
+            const char* plus_pointer = strchr(str, '+');
+            if(plus_pointer != NULL)
+            {
+                int index;
+                sscanf(plus_pointer + 1, "%d", &index);
+
+                char reg = cmd[2] - 'a' + 1;
+                if(reg > 4)
+                {
+                    printf("Syntax error: unknown register\n");
+                    printf("%s\n", str);
+                    abort();
+                }
+
+                *((char*)(*code - 1)) |= 0xE0;
+                *((elem_t*)(*code)) = index;
+                *((char*)(*code + sizeof(elem_t))) = reg;
+
+                StrToUpper(cmd + 1);
+                fprintf(listing, "%X %s %s + %d]\n", *((elem_t*)(*code)), cmd_name, cmd, index);
+                *code += sizeof(elem_t) + sizeof(char);
+            }
+
+            else
+            {
+                char reg = cmd[2] - 'a' + 1;
+                if(reg > 4)
+                {
+                    printf("Syntax error: unknown register\n");
+                    printf("%s\n", str);
+                    abort();
+                }
+
+                *((char*)(*code - 1)) |= 0xC0;
+                *((char*)(*code)) = reg;
+
+                StrToUpper(cmd + 1);
+                fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
+                *code += sizeof(char);
+            }
+        }
+
+        else
+        {
+            int index;
+            sscanf(cmd + 1, "%d", &index);
+
+            *((char*)(*code - 1)) |= 0xA0;
+            *((elem_t*)(*code)) = index;
+
+            fprintf(listing, "%X %s %s\n", *((elem_t*)(*code)), cmd_name, cmd);
+            *code += sizeof(elem_t);
+        }
+    }
+
+    else if(cmd[0] == 'r' && cmd[2] == 'x')
+    {
+        char reg = cmd[1] - 'a' + 1;
+        if(reg > 4)
+        {
+            printf("Syntax error: unknown register\n");
+            printf("%s\n", str);
+            abort();
+        }
+
+        *((char*)(*code - 1)) |= 0x40;
+        *((char*)(*code)) = reg;
+
+        StrToUpper(cmd);
+        fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
+        *code += sizeof(char);
+    }
+
+    else if(IsNum(cmd))
+    {
+        elem_t val = 0;
+        sscanf(cmd, elem_fmt, &val);
+
+        *((char*)(*code - 1)) |= 0x20;
+        *((elem_t*)(*code)) = val;
+
+        fprintf(listing, "%X %s ", *((elem_t*)(*code)), cmd_name);
+        fprintf(listing, elem_fmt, *((elem_t*)(*code)));
+        fprintf(listing, "\n");
+        *code += sizeof(elem_t);
+    }
+
+    else
+    {
+        printf("Syntax error: unknown argument\n");
+        printf("%s\n", str);
+        abort();
+    }
+
+    free(cmd_name);
+}
+
+
+
+void GetLabel(const char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation)
+{
+    assert(str != NULL);
+    assert(code != NULL);
+    assert(labels != NULL);
+    assert(cmd != NULL);
+
+    int shift = strstr(str, cmd) - str + strlen(cmd);
+    GetWord(str + shift, cmd);
+
+    if(IsNum(cmd))
+    {
+        int label_adr = 0;
+        sscanf(cmd, "%d", &label_adr);
+
+        *((int*)(*code)) = label_adr;
+        *code += sizeof(int);
+    }
+
+    else
+    {
+        if(cmd[0] != ':')
+        {
+            printf("syntax error: this is not a label\n");
+            printf("%s\n", str);
+            abort();
+        }
+
+        int label_adr = LabelFind(cmd + 1, labels);
+
+        if(num_of_compilation == 2 && label_adr == 0xFF)
+        {
+            printf("error: unknown label\n");
+            printf("%s\n", str);
+            abort();
+        }
+
+        *((int*)(*code)) = label_adr;
+        *code += sizeof(int);
+    }
+}
+
+
+
+int LabelFind(const char* label, struct Label* labels)
+{
+    assert(label != NULL);
+    assert(labels != NULL);
+
+    int i = 0;
+    while(labels[i].name != NULL && i < 50)
+    {
+        if(strcmp(label, labels[i].name) == 0) return labels[i].adr;
+        ++i;
+    }
+
+    return 0xFF;
+}
+
+
+
+int IsNum(const char* str)
+{
+    assert(str != NULL);
+
+    while(*str != '\0')
+    {
+        if(!((*str > 47 && *str < 58) || *str == '.'))
+            return 0;
+        ++str;
+    }
+    return 1;
+}
+
+
+
+void StrToUpper(char* str)
+{
+    assert(str != NULL);
+
+    char* begin = str;
+    while(*begin != '\0' && isalpha(*begin))
+    {
+        *begin -= 32;
+        ++begin;
+    }
+}
+
+
+
+int Stricmp(const char* str1, const char* str2)
+{
+    assert(str1 != NULL);
+    assert(str2 != NULL);
+
+    while((*str1 != '\0' && *str2 != '\0') && (tolower(*str1) == tolower(*str2)))
+    {
+        ++str1;
+        ++str2;
+    }
+
+    return *str1 - *str2;
+}
+
+
+
+void ClearLabels(struct Label* labels)
+{
+    assert(labels != NULL);
+
+    int i = 0;
+    while(labels[i].name != NULL && i < 50)
+    {
+        free(labels[i].name);
+        labels[i].name = NULL;
+        ++i;
+    }
+}

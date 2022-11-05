@@ -4,7 +4,9 @@
 #include "../include/onegin.h"
 #include "../include/stack.h"
 
-#define VERSION 2
+//=====================================================================================================
+
+#define VERSION 3
 #define SIGN 0xC
 #define LABELS_SIZE 50
 
@@ -16,30 +18,45 @@ struct Label
     char* name = NULL;
 };
 
+
+#define DEF_CMD(name, num, ...) CMD_##name = num,
+
 enum comands
 {
-    CMD_HLT,
-    CMD_PUSH,
-    CMD_POP,
-    CMD_ADD,
-    CMD_SUB,
-    CMD_MUL,
-    CMD_DIV,
-    CMD_DUP,
-    CMD_OUT,
-    CMD_DUMP,
-    CMD_IN,
-    CMD_JMP,
-    CMD_JB,
-    CMD_JBE,
-    CMD_JA,
-    CMD_JAE,
-    CMD_JE,
-    CMD_JNE,
-    CMD_CALL,
-    CMD_RET,
+    #include "../include/cmd.h"
 };
 
+#undef DEF_CMD
+
+#define DEF_CMD(name, num, arg, ...)                                                                                                       \
+                                if(Stricmp(cmd, #name) == 0)                                                                               \
+                                {                                                                                                          \
+                                    *ip = num;                                                                                             \
+                                    if(arg == 0)                                                                                           \
+                                    {                                                                                                      \
+                                        fprintf(listing, "%#8lX %2X   %s\n", ip - code - size, num, #name);                                \
+                                        ++ip;                                                                                              \
+                                    }                                                                                                      \
+                                                                                                                                           \
+                                    else if(arg == 1)                                                                                      \
+                                    {                                                                                                      \
+                                        fprintf(listing, "%#8lX %2X ", ip - code - size, num);                                             \
+                                        ++ip;                                                                                              \
+                                        GetArgs(text->str_array[line].str, &ip, cmd, listing);                                             \
+                                    }                                                                                                      \
+                                                                                                                                           \
+                                    else                                                                                                   \
+                                    {                                                                                                      \
+                                        fprintf(listing, "%#8lX %2X ", ip - code - size, num);                                             \
+                                        ++ip;                                                                                              \
+                                        GetLabel(text->str_array[line].str, &ip, labels, cmd, num_of_compilation);                         \
+                                        fprintf(listing, "%X %s %X\n", *((int*)(ip - sizeof(int))), #name, *((int*)(ip - sizeof(int))));   \
+                                    }                                                                                                      \
+                                }                                                                                                          \
+                                else
+
+
+//=====================================================================================================
 
 void AsmCodeArray(Text* program, const char* file);
 
