@@ -19,7 +19,7 @@ typedef struct{
 } Text;
 
 /* counts the number of symbols(bytes) int the file */
-void CountBytes(Text* txt, char* adr);
+void CountBytes(Text* txt,  const char* adr);
 
 /* makes a buffer for original text */
 void MakeBuf(Text* txt, FILE* fp);

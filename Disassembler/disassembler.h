@@ -40,6 +40,6 @@ enum comands
     CMD_RET
 };
 
-char* DisasmCodeArray(char* file);
+char* DisasmCodeArray(const char* file);
 
 void Disassemble(char* code);

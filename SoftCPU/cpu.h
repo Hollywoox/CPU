@@ -57,8 +57,8 @@ enum comands
 };
 
 
-void Ctor(CPU* cpu, size_t ram_size, char* adr);
+void Ctor(CPU* proc, size_t ram_size, const char* adr);
 
-void Run(CPU* cpu);
+void Run(CPU* proc);
 
-void Dtor(CPU* cpu);
+void Dtor(CPU* proc);

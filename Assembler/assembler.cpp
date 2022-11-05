@@ -2,7 +2,7 @@
 
 //=====================================================================================================
 
-void AsmCodeArray(Text* text, char* file)
+void AsmCodeArray(Text* text, const char* file)
 {
     assert(text != NULL);
     assert(file != NULL);
@@ -68,7 +68,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             ++label_index;
         }
 
-        else if(strcmp(cmd, "push") == 0)
+        else if(Stricmp(cmd, "push") == 0)
         {
             *ip = CMD_PUSH;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_PUSH);
@@ -77,7 +77,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             GetArgs(text->str_array[line].str, &ip, cmd, listing);
         }
 
-        else if(strcmp(cmd, "pop") == 0)
+        else if(Stricmp(cmd, "pop") == 0)
         {
             *ip = CMD_POP;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_POP);
@@ -86,56 +86,56 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             GetArgs(text->str_array[line].str, &ip, cmd, listing);
         }
 
-        else if(strcmp(cmd, "add") == 0)
+        else if(Stricmp(cmd, "add") == 0)
         {
             *ip = CMD_ADD;
             fprintf(listing, "%#8lX %2X   ADD\n", ip - code - size, CMD_ADD);
             ++ip;
         }
 
-        else if(strcmp(cmd, "sub") == 0)
+        else if(Stricmp(cmd, "sub") == 0)
         {
             *ip = CMD_SUB;
             fprintf(listing, "%#8lX %2X   SUB\n", ip - code - size, CMD_SUB);
             ++ip;
         }
 
-        else if(strcmp(cmd, "mul") == 0)
+        else if(Stricmp(cmd, "mul") == 0)
         {
             *ip = CMD_MUL;
             fprintf(listing, "%#8lX %2X   MUL\n", ip - code - size, CMD_MUL);
             ++ip;
         }
 
-        else if(strcmp(cmd, "div") == 0)
+        else if(Stricmp(cmd, "div") == 0)
         {
             *ip = CMD_DIV;
             fprintf(listing, "%#8lX %2X   DIV\n", ip - code - size, CMD_DIV);
             ++ip;
         }
 
-        else if(strcmp(cmd, "dup") == 0)
+        else if(Stricmp(cmd, "dup") == 0)
         {
             *ip = CMD_DUP;
             fprintf(listing, "%#8lX %2X   DUP\n", ip - code - size, CMD_DUP);
             ++ip;
         }
 
-        else if(strcmp(cmd, "out") == 0)
+        else if(Stricmp(cmd, "out") == 0)
         {
             *ip = CMD_OUT;
             fprintf(listing, "%#8lX %2X   OUT\n", ip - code - size, CMD_OUT);
             ++ip;
         }
 
-        else if(strcmp(cmd, "dump") == 0)
+        else if(Stricmp(cmd, "dump") == 0)
         {
             *ip = CMD_DUMP;
             fprintf(listing, "%#8lX %2X   DUMP\n", ip - code - size, CMD_DUMP);
             ++ip;
         }
 
-        else if(strcmp(cmd, "in") == 0)
+        else if(Stricmp(cmd, "in") == 0)
         {
             *ip = CMD_IN;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_IN);
@@ -144,14 +144,14 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             GetArgs(text->str_array[line].str, &ip, cmd, listing);
         }
 
-        else if(strcmp(cmd, "hlt") == 0)
+        else if(Stricmp(cmd, "hlt") == 0)
         {
             *ip = CMD_HLT;
             fprintf(listing, "%#8lX %2X   HLT\n", ip - code - size, CMD_HLT);
             ++ip;
         }
 
-        else if(strcmp(cmd, "jmp") == 0)
+        else if(Stricmp(cmd, "jmp") == 0)
         {
             *ip = CMD_JMP;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JMP);
@@ -161,7 +161,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JUMP %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "jb") == 0)
+        else if(Stricmp(cmd, "jb") == 0)
         {
             *ip = CMD_JB;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JB);
@@ -171,7 +171,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JB %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-       else if(strcmp(cmd, "jbe") == 0)
+       else if(Stricmp(cmd, "jbe") == 0)
         {
             *ip = CMD_JBE;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JBE);
@@ -181,7 +181,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JBE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         } 
 
-        else if(strcmp(cmd, "ja") == 0)
+        else if(Stricmp(cmd, "ja") == 0)
         {
             *ip = CMD_JA;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JA);
@@ -191,7 +191,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JA %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "jae") == 0)
+        else if(Stricmp(cmd, "jae") == 0)
         {
             *ip = CMD_JAE;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JAE);
@@ -201,7 +201,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JAE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "je") == 0)
+        else if(Stricmp(cmd, "je") == 0)
         {
             *ip = CMD_JE;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JE);
@@ -211,7 +211,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "jne") == 0)
+        else if(Stricmp(cmd, "jne") == 0)
         {
             *ip = CMD_JNE;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_JNE);
@@ -221,7 +221,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X JNE %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "call") == 0)
+        else if(Stricmp(cmd, "call") == 0)
         {
             *ip = CMD_CALL;
             fprintf(listing, "%#8lX %2X ", ip - code - size, CMD_CALL);
@@ -231,7 +231,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
             fprintf(listing, "%X CALL %X\n", *((int*)(ip - sizeof(int))), *((int*)(ip - sizeof(int))));
         }
 
-        else if(strcmp(cmd, "ret") == 0)
+        else if(Stricmp(cmd, "ret") == 0)
         {
             *ip = CMD_RET;
             fprintf(listing, "%#8lX %2X   RET\n", ip - code - size, CMD_RET);
@@ -272,7 +272,7 @@ void Compile(Text* text, struct Label* labels, int num_of_compilation)
 
 //=====================================================================================================
 
-int GetWord(char* str, char* cmd)
+int GetWord(const char* str, char* cmd)
 {
     assert(str != NULL);
     assert(cmd != NULL);
@@ -300,7 +300,7 @@ int GetWord(char* str, char* cmd)
 
 //=====================================================================================================
 
-void GetArgs(char* str, char** code, char* cmd, FILE* listing)
+void GetArgs(const char* str, char** code, char* cmd, FILE* listing)
 {
     assert(str     != NULL);
     assert(code    != NULL);
@@ -312,7 +312,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
     int shift      = strstr(str, cmd) - str + cmd_len;
 
     strcpy(cmd_name, cmd);
-    ToUpper(cmd_name);
+    StrToUpper(cmd_name);
 
     if(GetWord(str + shift, cmd) < 0)
     {
@@ -326,7 +326,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
     {
         if(cmd[1] == 'r' && cmd[3] == 'x')
         {
-            char* plus_pointer = strchr(str, '+');
+            const char* plus_pointer = strchr(str, '+');
             if(plus_pointer != NULL)
             {
                 int index;
@@ -344,7 +344,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 *((elem_t*)(*code))                = index;
                 *((char*)(*code + sizeof(elem_t))) = reg;
                 
-                ToUpper(cmd + 1);
+                StrToUpper(cmd + 1);
                 fprintf(listing, "%X %s %s + %d]\n", *((elem_t*)(*code)), cmd_name, cmd, index);
                 *code += sizeof(elem_t) + sizeof(char);
             }
@@ -362,7 +362,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
                 *((char*)(*code - 1)) |= 0xC0;
                 *((char*)(*code))      = reg;
 
-                ToUpper(cmd + 1);
+                StrToUpper(cmd + 1);
                 fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
                 *code += sizeof(char);
             }
@@ -394,6 +394,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
         *((char*)(*code - 1)) |= 0x40;
         *((char*)(*code))      = reg;
 
+        StrToUpper(cmd);
         fprintf(listing, "%X %s %s\n", *((char*)(*code)), cmd_name, cmd);
         *code += sizeof(char);
     }
@@ -424,7 +425,7 @@ void GetArgs(char* str, char** code, char* cmd, FILE* listing)
 
 //=====================================================================================================
 
-void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation)
+void GetLabel(const char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation)
 {
     assert(str    != NULL);
     assert(code   != NULL);
@@ -485,23 +486,22 @@ int LabelFind(const char* label, struct Label* labels)
 
 //=====================================================================================================
 
-int IsNum(char* str)
+int IsNum(const char* str)
 {
     assert(str != NULL);
 
-    char* begin = str;
-    while(*begin != '\0')
+    while(*str != '\0')
     {
-        if(!((*begin > 47 && *begin < 58) || *begin == '.'))
+        if(!((*str > 47 && *str < 58) || *str == '.'))
             return 0;
-        ++begin;
+        ++str;
     }
     return 1;
 }
 
 //=====================================================================================================
 
-void ToUpper(char* str)
+void StrToUpper(char* str)
 {
     assert(str != NULL);
 
@@ -511,6 +511,22 @@ void ToUpper(char* str)
         *begin -= 32;
         ++begin;
     }
+}
+
+//=====================================================================================================
+
+int Stricmp(const char* str1, const char* str2)
+{
+    assert(str1 != NULL);
+    assert(str2 != NULL);
+
+    while((*str1 != '\0' && *str2 != '\0') && (tolower(*str1) == tolower(*str2)))
+    {
+        ++str1;
+        ++str2;
+    }
+
+    return *str1 - *str2;
 }
 
 //=====================================================================================================

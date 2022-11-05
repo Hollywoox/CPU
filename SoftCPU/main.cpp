@@ -2,9 +2,9 @@
 
 int main(int argc, char* argv[])
 {
-    CPU cpu = {};
-    Ctor(&cpu, 100, argv[1]);
-    Run(&cpu);
-    Dtor(&cpu);
+    CPU proc = {};
+    Ctor(&proc, 100, argv[1]);
+    Run(&proc);
+    Dtor(&proc);
     return 0;
 }

@@ -4,13 +4,13 @@
 
 
 
-void Ctor(CPU* cpu, size_t ram_size, char* adr)
+void Ctor(CPU* proc, size_t ram_size, const char* adr)
 {
-    assert(cpu != NULL);
+    assert(proc != NULL);
     assert(adr != NULL);
 
-    cpu->RAM = (elem_t*)calloc(ram_size, sizeof(elem_t));
-    assert(cpu->RAM != NULL);
+    proc->RAM = (elem_t*)calloc(ram_size, sizeof(elem_t));
+    assert(proc->RAM != NULL);
 
     char* info = (char*)calloc(1, 2 * sizeof(char) + sizeof(elem_t));
     assert(info != NULL);
@@ -22,22 +22,22 @@ void Ctor(CPU* cpu, size_t ram_size, char* adr)
 
     if(*info != SIGN)
     {
-        printf("Error: The signature of the file does not match the signarure the CPU\n");
+        printf("Error: The signature of the file does not match the signature of the CPU\n");
         abort();
     }
     if(*(info + 1) != VERSION)
     {
-        printf("Warning: The version of your assemmbler is old, please, buy a new one\n");
+        printf("Warning: The version of your CPU is old, please, buy a new one\n");
     }
     
-    cpu->code_size = *((int*)(info + 2));
-    cpu->code      = (char*)calloc(cpu->code_size + 1, sizeof(char));
-    assert(cpu->code != NULL);
+    proc->code_size = *((int*)(info + 2));
+    proc->code      = (char*)calloc(proc->code_size + 1, sizeof(char));
+    assert(proc->code != NULL);
 
-    fread(cpu->code, sizeof(char), cpu->code_size, bin_file);
+    fread(proc->code, sizeof(char), proc->code_size, bin_file);
 
-    StackCtor(&cpu->stk,    10);
-    StackCtor(&cpu->ret_stk, 0);
+    StackCtor(&proc->stk,    10);
+    StackCtor(&proc->ret_stk, 0);
 
     fclose(bin_file);
     free(info);
@@ -45,54 +45,54 @@ void Ctor(CPU* cpu, size_t ram_size, char* adr)
 
 //=====================================================================================================
 
-void Run(CPU* cpu)
+void Run(CPU* proc)
 {
-    char* ip = cpu->code;
+    char* ip = proc->code;
     while(ip)
     {
         switch(*ip & 0x1F)
         {
             case CMD_ADD:
             {
-                StackPush(&cpu->stk, StackPop(&cpu->stk) + StackPop(&cpu->stk));
+                StackPush(&proc->stk, StackPop(&proc->stk) + StackPop(&proc->stk));
                 ip += 1;
                 break;
             }
 
             case CMD_SUB:
             {
-                StackPush(&cpu->stk, -StackPop(&cpu->stk) + StackPop(&cpu->stk));
+                StackPush(&proc->stk, -StackPop(&proc->stk) + StackPop(&proc->stk));
                 ip += 1;
                 break;
             }
 
             case CMD_MUL:
             {
-                StackPush(&cpu->stk, StackPop(&cpu->stk) * StackPop(&cpu->stk));
+                StackPush(&proc->stk, StackPop(&proc->stk) * StackPop(&proc->stk));
                 ip += 1;
                 break;
             }
 
             case CMD_DIV:
             {
-                elem_t last = StackPop(&cpu->stk);
-                StackPush(&cpu->stk, StackPop(&cpu->stk) / last);
+                elem_t last = StackPop(&proc->stk);
+                StackPush(&proc->stk, StackPop(&proc->stk) / last);
                 ip += 1;
                 break;
             }
 
             case CMD_DUP:
             {
-                elem_t last = StackPop(&cpu->stk);
-                StackPush(&cpu->stk, last);
-                StackPush(&cpu->stk, last);
+                elem_t last = StackPop(&proc->stk);
+                StackPush(&proc->stk, last);
+                StackPush(&proc->stk, last);
                 ip += 1;
                 break;
             }
 
             case CMD_DUMP:
             {
-                StackDump(&cpu->stk);
+                StackDump(&proc->stk);
                 ip += 1;
                 break;
             }
@@ -100,7 +100,7 @@ void Run(CPU* cpu)
             case CMD_OUT:
             {
                 printf("out: ");
-                printf(elem_fmt, StackPop(&cpu->stk));
+                printf(elem_fmt, StackPop(&proc->stk));
                 printf("\n");
                 ip += 1;
                 break;
@@ -125,20 +125,20 @@ void Run(CPU* cpu)
                     }
                     if(cmd & ARG_REG)
                     {
-                        arg += cpu->Regs[*ip];
+                        arg += proc->Regs[*ip];
                         ip  += 1;
                     }
 
-                    cpu->RAM[(int)arg] = new_elem;
+                    proc->RAM[(int)arg] = new_elem;
                 }
                 else if(cmd & ARG_REG)
                 {
-                    cpu->Regs[*ip] = new_elem;
+                    proc->Regs[*ip] = new_elem;
                     ip += 1;
                 }
                 else
                 {
-                    StackPush(&cpu->stk, new_elem);
+                    StackPush(&proc->stk, new_elem);
                 }
                 
                 break;
@@ -158,15 +158,15 @@ void Run(CPU* cpu)
                 }
                 if(cmd & ARG_REG)
                 {
-                    arg += cpu->Regs[*ip];
+                    arg += proc->Regs[*ip];
                     ip  += 1;
                 }
                 if(cmd & ARG_RAM)
                 {
-                    arg = cpu->RAM[(int)arg];
+                    arg = proc->RAM[(int)arg];
                 }
 
-                StackPush(&cpu->stk, arg);
+                StackPush(&proc->stk, arg);
                 break;
             }
 
@@ -186,20 +186,20 @@ void Run(CPU* cpu)
                     }
                     if(cmd & ARG_REG)
                     {
-                        arg += cpu->Regs[*ip];
+                        arg += proc->Regs[*ip];
                         ip  += 1;
                     }
 
-                    cpu->RAM[(int)arg] = StackPop(&cpu->stk);
+                    proc->RAM[(int)arg] = StackPop(&proc->stk);
                 }
                 else if(cmd & ARG_REG)
                 {
-                    cpu->Regs[*ip] = StackPop(&cpu->stk);
+                    proc->Regs[*ip] = StackPop(&proc->stk);
                     ip            += 1;
                 }
                 else
                 {
-                    StackPop(&cpu->stk);
+                    StackPop(&proc->stk);
                 }
 
                 break;
@@ -214,7 +214,7 @@ void Run(CPU* cpu)
             {
                 ip     += 1;
                 int adr = *((int*)ip);
-                ip      = cpu->code + adr;
+                ip      = proc->code + adr;
                 break;
             }
 
@@ -223,19 +223,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 < var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -244,19 +244,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 <= var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -265,19 +265,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 > var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -286,19 +286,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 >= var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -307,19 +307,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 == var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -328,19 +328,19 @@ void Run(CPU* cpu)
                 ip     += 1;
                 int adr = *((int*)ip);
 
-                elem_t var1 = StackPop(&cpu->stk);
-                elem_t var2 = StackPop(&cpu->stk);
+                elem_t var1 = StackPop(&proc->stk);
+                elem_t var2 = StackPop(&proc->stk);
                 if(var1 != var2)
                 {
-                    ip = cpu->code + adr;
+                    ip = proc->code + adr;
                 }
                 else
                 {
                     ip += sizeof(int);
                 }
 
-                StackPush(&cpu->stk, var2);
-                StackPush(&cpu->stk, var1);
+                StackPush(&proc->stk, var2);
+                StackPush(&proc->stk, var1);
                 break;
             }
 
@@ -348,17 +348,17 @@ void Run(CPU* cpu)
             {
                 ip     += 1;
                 int adr = *((int*)ip);
-                int ret_adr = ip + sizeof(int) - cpu->code;
-                StackPush(&cpu->ret_stk, ret_adr);
+                int ret_adr = ip + sizeof(int) - proc->code;
+                StackPush(&proc->ret_stk, ret_adr);
 
-                ip = cpu->code + adr;
+                ip = proc->code + adr;
                 break;
             }
 
             case CMD_RET:
             {
-                int ret_adr = StackPop(&cpu->ret_stk);
-                ip          = cpu->code + ret_adr;
+                int ret_adr = StackPop(&proc->ret_stk);
+                ip          = proc->code + ret_adr;
                 break;
             }
 
@@ -373,14 +373,14 @@ void Run(CPU* cpu)
  
 //=====================================================================================================
 
-void Dtor(CPU* cpu)
+void Dtor(CPU* proc)
 {
-    free(cpu->RAM);
-    cpu->RAM = NULL;
+    free(proc->RAM);
+    proc->RAM = NULL;
 
-    free(cpu->code);
-    cpu->code = NULL;
+    free(proc->code);
+    proc->code = NULL;
 
-    StackDtor(&cpu->stk);
-    StackDtor(&cpu->ret_stk);
+    StackDtor(&proc->stk);
+    StackDtor(&proc->ret_stk);
 }

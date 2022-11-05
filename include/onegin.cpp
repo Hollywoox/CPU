@@ -1,7 +1,7 @@
 #include "onegin.h"
 
 
-void CountBytes(Text* txt, char* adr)
+void CountBytes(Text* txt, const char* adr)
 {
     struct stat data = {};
     stat(adr, &data);

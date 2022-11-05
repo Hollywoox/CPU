@@ -2,7 +2,7 @@
 
 //=====================================================================================================
 
-char* DisasmCodeArray(char* adr)
+char* DisasmCodeArray(const char* adr)
 {
     assert(adr != NULL);
 

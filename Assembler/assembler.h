@@ -41,20 +41,22 @@ enum comands
 };
 
 
-void AsmCodeArray(Text* program, char* file);
+void AsmCodeArray(Text* program, const char* file);
 
 void Compile(Text* text, struct Label* labels, int num_of_compilation);
 
-int GetWord(char* str, char* cmd);
+int GetWord(const char* str, char* cmd);
 
-void GetArgs(char* str, char** code, char* cmd, FILE* listing);
+void GetArgs(const char* str, char** code, char* cmd, FILE* listing);
 
-void GetLabel(char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation);
+void GetLabel(const char* str, char** code, struct Label* labels, char* cmd, int num_of_compilation);
 
 int LabelFind(const char* label, struct Label* labels);
 
-int IsNum(char* str);
+int IsNum(const char* str);
 
-void ToUpper(char* str);
+void StrToUpper(char* str);
+
+int Stricmp(const char* str1, const char* str2);
 
 void ClearLabels(struct Label* labels);
